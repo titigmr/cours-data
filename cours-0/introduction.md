@@ -6,15 +6,15 @@ theme: default
 ---
 <style>
 
-section 
+section
   background: white;
 
 
-img[alt~="center"] 
+img[alt~="center"]
   display: block;
   margin: 0 auto;
 
-blockquote 
+blockquote
   background: #ffedcc;
   border-left: 10px solid #d1bf9d;
   margin: 1.5em 10px;
@@ -54,7 +54,7 @@ blockquote:after
 Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une chaîne de traitement de la données comme solution pour un client
 
 
-- **Présentation des travaux** : exposé de 15 minutes 
+- **Présentation des travaux** : exposé de 15 minutes
 - **Questions/réponses** : 10 minutes de question individuelles
 - **Livrable** : Powerpoint détaillant votre solution à envoyer avant le jour de la présentation
 
@@ -69,11 +69,11 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 
 ## Points à détailler lors de la présentation
 
-- Présentation du sujet choisi 
+- Présentation du sujet choisi
 - Choix de la problématique et comment la solution y répond **avec réalisme**
-- Les différentes étapes de traitements de la donnée (pré-processing, collecte, valorisation ou d'exposition de la donnée) 
+- Les différentes étapes de traitements de la donnée (pré-processing, collecte, valorisation ou d'exposition de la donnée)
 - Présenter les différentes briques techniques et fonctionnelles choisies
-- Etude comparative des technologies considérées pour chacune des étapes (extraction, stockage, traitement, valorisation, etc.) 
+- Etude comparative des technologies considérées pour chacune des étapes (extraction, stockage, traitement, valorisation, etc.)
 
 
 ---
@@ -104,12 +104,12 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 
 **Onyxia** est une application web qui permet aux data scientists d'accéder à un environnement de travail distant
 
-- Permet d'explorer des données 
+- Permet d'explorer des données
 - De lancer des services (éditeur de code, base de données, outils d'orchestration, etc.)
 - Se base sur Kubernetes et permet de s'y initier
 - Fournit des formations
 
-![bg right:30% fit](./assets/Onyxia.png) 
+![bg right:30% fit](./assets/Onyxia.png)
 
 
 > Lien pour se connecter disponible sur : https://datalab.sspcloud.fr
