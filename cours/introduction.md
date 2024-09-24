@@ -37,6 +37,7 @@ style: |
 
 ---
 <!-- paginate: true -->
+<!-- footer: '' -->
 
 ## Séances
 
@@ -116,7 +117,7 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 <div class="columns">
 <div>
 
-**Onyxia** est une application web développé par l'INSEE qui permet aux data scientists et data ingénieurs de :
+**Onyxia** est une application web développée par l'INSEE qui permet aux data scientists et data ingénieurs de :
 
 - Lancer des services (éditeur de code, base de données, outils d'orchestration, etc.)
 - D'explorer des données et d'entraîner des modèles

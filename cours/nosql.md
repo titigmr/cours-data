@@ -37,7 +37,7 @@ style: |
 
 ---
 <!-- paginate: true -->
-
+<!-- footer: '' -->
 # Séances
 
 1. Introduction et prise en main d'Onyxia
@@ -126,7 +126,7 @@ style: |
 
 ---
 
-## Définition du NoSQL
+## Avantages du NoSQL
 
 
 - **Flexibilité des schémas** : les données peuvent changer au fil du temps
@@ -149,8 +149,6 @@ les mêmes données au même moment
 
 ---
 
-## Théorème CAP
-
 > Théorème de CAP (Brewer, 2000) :
 *"Dans un système distribué, il est impossible d’obtenir ces trois propriétés en même temps"*
 
@@ -159,7 +157,6 @@ les mêmes données au même moment
 
 ---
 
-## Théorème CAP
 
 ![center](./assets/CA_AP_CP.png)
 
@@ -607,13 +604,20 @@ SUBSCRIBE mychannel
 UNSUBSCRIBE mychannel
 ```
 
+**Quand ?**
+
+- Notifications en temps réel
+- Coordination entre services
+- Diffusion d'événements système
+
 </div>
 <div>
 
 ![](./assets/subpub.png)
 
-</div>
 
+
+</div>
 </div>
 
 
@@ -622,7 +626,7 @@ UNSUBSCRIBE mychannel
 ## Exercice 1
 
 
-1. Installer `redis`. Cette base de données ne fait pas partie du catalogue `Onyxia`. Pour l'installer, lancer un terminal puis lancer la commande :
+1. Installer `redis`. Cette base de données ne fait pas partie du catalogue Onyxia. Pour l'installer, lancer un terminal puis lancer la commande :
 ```bash
   kubectl run redis --image redis && kubectl expose pod/redis --port 6379
 ```
@@ -634,8 +638,6 @@ UNSUBSCRIBE mychannel
 4. Créer un hashage  `AA-000-AA` avec comme sous clé `marque` `Mercedes`, `modele` `Classe A` et `annee` `2020`. Lui appliquer ensuite une expiration de 60 secondes.
 
 ---
-
-<!-- footer: '' -->
 
 ## Exercice 2 : Intégration de Redis avec une API
 
@@ -650,7 +652,6 @@ L'objectif de cet exercice est d'implémenter une API avec le framework [FastAPI
 
 ---
 
-<!-- footer: 'Master 2 IMSD - 2024' -->
 
 # MongoDB
 
@@ -703,44 +704,39 @@ db = client['mydatabase']
 
 <div class="columns"> <div>
 
-Les données métiers sont souvent stockées dans un format relationnel (csv, SGBDR, etc.)
+Les données métiers sont souvent stockées dans un format relationnel ou en `csv`
 
-> **Dénormalisation** : combiner l'ensemble des données au sein d'un même document plutôt que de diviser les données en plusieurs collections et d'utiliser des jointures
+<br>
 
-</div> <div>
+**Principe de la normalisation**
 
-**:x: Plusieurs documents**
+- Évite la duplication de données
+- Assure une meilleure fiabilité de la donnée
 
-`users`
-```json
-{
-  "_id": 1,
-  "name": "Alice"
-}
-```
-`order`
+> :warning: À éviter dans une base document
 
-```json
-{
-  "order_id": 101,
-  "user_id": 1,
-  "item": "Laptop"
-}
-```
+</div>
+<div>
 
-**:white_check_mark: Un seul document**
 
-`users`
+`orders`
 
-```json
-{
-  "_id": 1,
-  "name": "Alice"
-  "orders": [
-    {"order_id": 101, "user_id": 1, "item": "Laptop" }
-  ]
-}
-```
+|order_id|name|store_id
+|---|---|---|
+|0|alex|0|
+|1|alice|1|
+|2|tom|0|
+
+
+
+`store`
+
+|store_id|store_city|store_size
+|---|---|---|
+|0|Paris|Small
+|1|Marseille|Large
+
+
 
 
 </div>
@@ -748,37 +744,597 @@ Les données métiers sont souvent stockées dans un format relationnel (csv, SG
 
 ---
 
-## Opérations CRUD
+
 
 <div class="columns"> <div>
 
-Ajouter un document à une collection
 
-```bash
-db.users.insert_one({"name": "Bob", "age": 25})
+
+**Dénormalisation**
+
+Combiner l'ensemble des données au sein d'un même document plutôt que d'utiliser des jointures entre documents
+
+
+</div>
+<div>
+
+**Pourquoi ?**
+
+
+- Stockage à faible coût aujourd’hui
+- Référence à plusieurs documents augmente le temps de réponse
+- Simplification des requêtes
+
+</div>
+</div>
+
+
+`orders`
+
+```json
+{
+  "_id": 1,
+  "name": "alex"
+  "store": {
+    {"store_id": 0, "store_city": "Paris", "store_size":"Small"
+  }
+}
 ```
 
-Récupérer des documents
+---
+
+
+
+<div class="columns"> <div>
+
+
+- **Imbrication de documents** : idéal pour les relation 1-1
+- **Référence partielle** : répliquer une partie des informations couramment utilisée et référencer les détails via un id
+- **Risque des modifications** : couteux si une modification implique de modifier tous les documents
+- **Vérifier la taille des document** : dans le cas de relation 1-n, peut alourdir la taille du document (max `16Mo`)
+
+</div>
+<div>
+
+```json
+{
+  "_id": ObjectId("6149eae5a1c2f1001e5e8a23"),
+  "title": "How to scale MongoDB",
+  "author": {
+    "name": "John Doe",
+    "job": "Data Scientist"
+    "user_id": ObjectId("6149eae5a1c2f1001e5e8b24")
+    "address": {
+      "city": "Paris",
+      "state": "France",
+      "zip": "75014"
+    }
+  },
+  "comments": [
+    {
+      "comment_id": ObjectId("6149eae5a1c2f1001e5e8a25"),
+      "text": "Great article!",
+      "commenter": {
+        "name": "Jane Smith",
+        "user_id": ObjectId("6149eae5a1c2f1001e5e8b26")
+      },
+      "created_at": "2023-09-21T14:15:22Z"
+    },
+    {
+      "comment_id": ObjectId("6149eae5a1c2f1001e5e8a26"),
+      "text": "I found it very helpful!",
+      "commenter": {
+        "name": "Alice Brown",
+        "user_id": ObjectId("6149eae5a1c2f1001e5e8b27")
+      },
+      "created_at": "2023-09-21T14:20:15Z"
+    }
+  ]
+}
+```
+</div>
+</div>
+
+---
+
+## Insertion de données
+
+<div class="columns">
+
+<div>
+
+
+**Ajouter un document**
 
 ```bash
-db.users.find({"name": "Bob"})
+db.collection.insertOne({"name": "Alice","age": 25})
 ```
 
-Modifier un document existant
+**Insérer plusieurs documents**
 
 ```bash
-db.users.update_one({"name": "Bob"}, {"$set": {"age": 26}})
+db.collection.insertMany([{"name": "Bob", "age": 30},
+{"name": "Charlie", "age" 35}], { ordered: false })
+```
+
+> `ordered`: n’impose pas d’ordre à l’insertion et tente l'ensemble
+> `writeConcern` : gestion de la vérification de l'écriture (`majority`, `0`, `1`)
+
+</div>
+
+<div>
+
+Utilisation de `mongoimport` pour de l'import en masse (fichiers CSV, JSON, etc.).
+
+```bash
+mongoimport --db mydatabase
+--collection mycollection
+--file data.json --jsonArray
+```
+
+- Très efficace pour de l'import massif
+- Supporte différents formats (JSON, CSV)
+
+> MongoDB crée automatiquement les collections lors de la première insertion
+
+</div>
+</div>
+
+---
+
+## Recherche de données
+
+<div class="columns">
+
+<div>
+
+**Trouver un document**
+
+```json
+db.collection.findOne({ "name": "Alice" })
+```
+
+
+**Trouver plusieurs documents**
+
+```json
+db.collection.find({ "age": {"gt": 30} })
+```
+
+**Filtrage**
+
+Valeur exacte : `{ "name": "Alice" }`
+Sous-clé : `{ "address.city": "Metz" }`
+Regex : `{ "name": { $regex: "^A" } }`
+
+
+</div>
+<div>
+
+**Paramètres**
+
+- **Premier paramètre** : critère de recherche
+- **Deuxième paramètre** : projection (champ à inclure/exclure) dans la sortie
+
+```json
+db.collection.find(
+  { "age": { $gt: 30 } },  // critère
+  { "name": 1, "age": 1 }   // projection
+)
+```
+
+> `{ "_id": 0}` pour exclure l'id
+
+</div>
+</div>
+
+---
+
+
+<div class="columns">
+
+<div>
+
+**Comparaisons**
+
+- `$gt` et `$lt` : supérieur ou inférieur
+`{ "age": { $gt: 30 } }`
+- `$gte` et `$lte` : supérieur/inférieur ou égal à
+`{ "age": { $gte: 30 } }`
+- `$and` ou `$or` : combinaison `{"age": {"and": [{"$lte": 30}, {"$gte": 40}] }}`
+- `$ne` : non égal à
+`{ "age": { $ne: 25 } }`
+
+</div>
+<div>
+
+**Inclusions/exclusions**
+
+- `$in` : inclus dans une liste
+`{ "status": { $in: ["Active", "Pending"] } }`
+- `$nin` : non inclus dans une liste
+`{ "status": { $nin: ["Banned"] } }`
+- `$exists` : si la clé existe
+`{ "age": { $exists: 1 } }`
+
+</div>
+</div>
+
+---
+
+## Suppression de données
+
+<div class="columns">
+
+<div>
+
+- `deleteOne` : supprime un seul document correspondant au critère
+- `deleteMany` : supprime tous les documents correspondant au critère
+- Pour supprimer tous les documents d'une collection
+
+</div>
+<div>
+
+```json
+db.collection.deleteOne({ name: "Alice" })
+```
+
+<br>
+
+```json
+db.collection.deleteMany({ age: { $lt: 30 } })
+```
+
+<br>
+
+```json
+db.collection.deleteMany({})                 
+```
+
+</div>
+</div>
+
+> :warning: Vérifier le critère avant toute suppression
+
+---
+
+
+## Mise à jours des données
+
+<div class="columns">
+
+<div>
+
+
+- `updateOne` : met à jour un document correspondant au critère
+- `updateMany` : met à jour tous les documents correspondants au critère (ou tous)
+- `replaceOne` : remplace entièrement un document correspondant au critère
+-  `replaceMany` : remplace entièrement tous les documents correspondants au critère
+
+</div>
+<div>
+
+
+
+- **Premier paramètre** : critère de recherche (quel document modifier)
+- **Second paramètre** : transformation à appliquer (quelles modifications apporter)
+
+
+```json
+db.customers.updateOne(
+  { "name": "Alex" },
+  { $set: { "email": "newemail@example.com" } }
+)
+```
+
+</div>
+</div>
+
+---
+
+
+<div class="columns">
+
+<div>
+
+`$set` : définit une nouvelle valeur pour un champ spécifique
+
+```json
+{ $set: { "email": "updated_email@example.com" } }
 ````
 
-Effacer un document
+`$inc` : incrémente ou décrémente une valeur numérique
 
-```bash
-db.users.delete_one({"name": "Bob"})
+```json
+{ $inc: { "age": 1 } } // Ajoute 1 à l'âge
+```
+
+`$rename` : renomme une clé existante
+
+```json
+{ $rename: { "oldFieldName": "newFieldName" } }
+```
+
+</div>
+
+<div>
+
+
+`$unset` : supprime un champ
+
+```json
+{ $unset: { "address": "" } } // Supprime le champ
+```
+
+`$mul` : multiplie la valeur par un nombre spécifié
+
+```json
+{ $mul: { "salary": 1.1 } } // Augmente de 10%
+```
+
+>le paramètre optionnel `{ upsert: true }` permet de crée un nouveau document si aucun n'est trouvé avec le critère de recherche
+
+</div>
+</div>
+
+---
+
+## Pipeline de données
+
+
+<div class="columns">
+<div>
+
+* Ensemble d'étapes qui traitent les documents
+* Chaque étape passe les résultats à la suivante
+
+```json
+db.orders.aggregate([
+    { $match: { status: "completed" } },
+    { $group: { _id: "$customerId", totalAmount: { $sum: "$amount" } } }
+]);
+```
+
+- `merge` : permet d’écrire le résultat dans un document (toujours en dernière étape)
+
+```json
+{ $merge: { into: "myOutput", on: "_id", 
+  whenMatched: "replace",
+  whenNotMatched: "insert" } }
+```
+
+
+
+</div>
+<div>
+
+- `$match` : permet de filtrer les documents afin de les passer à l’étape suivante
+
+- `$project` : permet de sélectionner les champs à passer dans la prochaine étape d’une pipeline
+
+- `$group` : permet de regrouper des données et d’y appliquer une expression à chaque groupe
+
+> D'autres étapes sont disponibles [ici](https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/)
+
+
+</div>
+</div>
+
+
+---
+
+<div class="columns">
+<div>
+
+
+- `uwind` : applatit une liste à afin de produire une clé pour
+chaque élément dont la valeur est un élément de la liste
+- `$lookup` : permet de faire correspondre des colonnes d’un document avec la colonne d’un autre document
+
+`inventory`
+```json
+{ prodId: 100, price: 20, quantity: 125 },
+{ prodId: 101, price: 10, quantity: 234 },
+{ prodId: 102, price: 15, quantity: 432 },
+```
+
+`orders`
+
+```json
+{ orderId: 201, custid: 301, prodId: 100, numPurchased: 20 },
+{ orderId: 202, custid: 302, prodId: 101, numPurchased: 10 },
+{ orderId: 203, custid: 303, prodId: 102, numPurchased: 5 },
 ```
 
 </div>
 <div>
+
+*Création d'une vue `sales` à partir de la collection `orders`*
+
+```json
+db.createView( "sales", "orders", [
+   {
+      $lookup:
+         {
+            from: "inventory", localField: "prodId",
+            foreignField: "prodId",
+            as: "inventoryDocs"
+         }
+   },
+   {
+      $project:
+         {
+           _id: 0, prodId: 1,
+           orderId: 1,
+           numPurchased: 1,
+           price: "$inventoryDocs.price"
+         }
+   },
+      { $unwind: "$price" }
+] )
+```
+
+`sales`
+```json
+{ orderId: 201, prodId: 100, numPurchased: 20, price: 20 },
+{ orderId: 202, prodId: 101, numPurchased: 10, price: 10 },
+{ orderId: 203, prodId: 102, numPurchased: 5, price: 15 },
+{ orderId: 204, prodId: 103, numPurchased: 15, price: 17 },
+```
+
 </div>
 </div>
+
+---
+
+## Exercice
+
+
+1. Lancer un service mongodb sur Onyxia
+2. Insérer les données des deux `csv` dans chacun une collection
+3. Mettre en place une dénormalisation des données 
+4. 
+
+
+
+---
+## Optimisation des performances : indexation
+
+<div class="columns">
+<div>
+
+
+Un index permet d'éviter de scanner l'ensemble des documents lors d'une recherche
+
+* :white_check_mark: Améliore le temps de lecture
+* :x: Diminue le temps d'écriture
+
+**Lister les index**
+
+```json
+db.collection.getIndexes()
+````
+
+**Supprimer un index**
+
+```json
+db.collection.dropIndex("indexName")
+```
+
+
+</div>
+<div>
+
+
+Plusieurs types d'index :
+- Index par défaut (`_id`)
+- Index simple (sur un seul champ) `db.collection.createIndex({ field: 1 })`
+- Index composés (plusieurs  champs) `db.collection.createIndex({ field1: 1, field2: -1 })`
+
+:warning: Vérifier que votre index tient en RAM `db.collection.totalIndexSize()`
+
+</div>
+</div>
+
+---
+
+## Optimisation des performances : sharding
+
+<div class="columns">
+<div>
+
+**Principe de partitionnement horizontal** pour distribuer les données à travers plusieurs serveurs
+
+- `shards` : chaque serveur `shard` contient une partie des données (`chunk`).
+- `mongos` : agit comme un routeur de requêtes selon les données et les configurations de préférences
+
+</div>
+<div>
+
+<br>
+
+![](./assets/sharded-cluster-mixed.bakedsvg.svg)
+
+```json
+sh.enableSharding("mydb")
+```
+
+</div>
+</div>
+
+
+---
+
+<div class="columns">
+<div>
+
+
+
+**Shard Key** : clé de répartition de la donnée
+
+- Cardinalité large (nombre de `chunks`)
+- Fréquence faible (uniformément répartie)
+
+Deux type de *sharding* :
+  - **Hashed sharding** : fonction appliquée à la clé
+    - Accès aléatoires
+    - Scalabilité plus simple
+  - **Ranged sharding** : organisation par plage de valeurs
+    - :warning: déséquilibre possible
+    - Idéal pour les accès par plage de valeurs *(logs, transactions)*
+</div>
+
+
+
+<div>
+
+
+![](./assets/sharded-cluster-ranged.svg)
+
+```
+sh.shardCollection("mydb.collection2", { shardKey: "hashed" })
+```
+
+![](./assets/sharded-cluster-hashed-distribution.bakedsvg.svg)
+
+
+
+```
+sh.shardCollection("mydb.collection", { shardKey: 1 })
+```
+
+</div>
+</div>
+
+
+---
+
+<div class="columns">
+<div>
+
+- **Replica Sets** : ensemble de `shards` qui maintiennent la même données (pour la redondance et disponibilité)
+  - Serveur primaire (écriture) et secondaire (lecture)
+  - Réplication asynchrone
+  - Principe d'élection avec *l'arbiter* (externe) et *Read Preference*
+
+
+- **Balancer** : processus qui gère la répartition des `chunks` entre les `shards`
+
+</div>
+<div>
+
+<br>
+
+<br>
+
+![center](./assets/sharded-cluster-production-architecture.png)
+
+</div>
+</div>
+
+
+---
+
+
 
 ---
