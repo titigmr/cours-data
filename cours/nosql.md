@@ -62,7 +62,7 @@ style: |
 <div class="columns">
 <div>
 
-- **Scalabilité horizontale limitée** : difficulté sur la montée en charge et *sharding* complexe (partionnement de données)
+- **Scalabilité horizontale limitée** : difficulté sur la montée en charge et *sharding* complexe
 
 - **Coût élevé** : beaucoup sont sous licence et assez cher, nécessite des moyens conséquents pour être résilient
 
@@ -118,7 +118,7 @@ style: |
 
 - NoSQL pour *Not Only SQL*
 
-- Utilise les propriété **BASE** :
+- Utilise les propriétés **BASE** :
   - **Basically Available** : toujours disponible *(tolérance aux pannes)*
   - **Soft-state** : pas de schéma fixe (*gestion de données compelexes ou non structurées)*
   - **Eventually Consistent** : la donnée finira par être cohérente (*ex : mise à jour du profil sur les réseau sociaux*)
@@ -130,9 +130,9 @@ style: |
 
 
 - **Flexibilité des schémas** : les données peuvent changer au fil du temps
-- **Scalabilité horizontale** : facilité à ajouter des nœuds pour augmenter les capacités
+- **Scalabilité horizontale** : facilité à ajouter des nœuds pour augmenter la capacité
 - **Performance** : optimisé pour les grandes quantités de données et les systèmes distribués
-- **Adapté aux big data et aux applications modernes** (temps réel, IoT, etc.)
+- **Adapté aux big data et aux applications modernes** : temps réel, IoT, etc.
 
 ---
 
@@ -214,11 +214,11 @@ La donnée est distribuée et doit être toujours disponible. Les synchronisatio
 <div>
 
 
-Un système clé-valeur agit comme un dictionnaire
-- La clé identifie la donnée de manière unique et permet de la gérer
+Un système clé-valeur agit comme un dictionnaire :
+- La clé identifie la donnée de manière unique et permet d'en récupérer la valeur
 - La valeur contient n’importe quel type de données
 - Performance très élevée en lecture et écriture
-- Limité aux opérations **CRUD**
+- Limité aux opérations *CRUD* et non à son analyse
 
 </div>
 
@@ -347,7 +347,8 @@ Utile pour faire de la représentation de liens entre des données *(connexion e
 
 - **RE**mote **DI**ctionnary **S**erver (https://redis.io)
 - Vitesse d’écriture et lecture très élevée
-- Base de données légère (en mémoire)
+- Base de données en mémoire (rapide)
+- Accès par une table *hashage*
 
 **Quand l'utiliser ?**
 
@@ -365,7 +366,8 @@ Utile pour faire de la représentation de liens entre des données *(connexion e
 ```python
 import redis
 
-r = redis.Redis(host='redis', port=6379, decode_responses=True)
+r = redis.Redis(host='redis', port=6379,
+decode_responses=True)
 ```
 
 **Stockage de clés en python**
@@ -379,12 +381,18 @@ r = redis.Redis(host='redis', port=6379, decode_responses=True)
 
 ## Structure des données
 
+
 <div class="columns">
 
 <div>
 
 
-**Clé-valeur** : les données sont stockées sous forme de paires **clé-valeur**
+**Strings** : les données sont stockées sous toutes formes de données (nombres, chaine, image, etc.)
+
+* `SET` : associe la clé `mykey` à la valeur `hello`
+* `GET` : récupère la valeur associée à `mykey`
+* `DEL` : supprime la clé `mykey`
+
 
 ```bash
 SET mykey "hello"
@@ -394,10 +402,6 @@ DEL mykey
 GET mykey
 (nil)
 ```
-
-* `SET` : associe la clé `mykey` à la valeur `hello`
-* `GET` : récupère la valeur associée à `mykey`
-* `DEL` : supprime la clé `mykey`
 
 </div>
 
@@ -428,7 +432,7 @@ MGET foo1 foo2 foo3
 
 <div>
 
-**Hashage** : clés associées à un ensemble de sous-clés et de valeurs, idéal pour des objets complexes
+**Hashage** : clés associées à un ensemble de sous-clés et de valeurs accessibles
 
 * `HSET` : ajoute des sous-clés et valeurs à un objet
 * `HGETALL` : récupère toutes les sous-clés et valeurs associées
@@ -443,7 +447,7 @@ HGETALL user:1001
 </div>
 <div>
 
-**Liste** : l'ordre des éléments est conservé, utile pour des files d'attente
+**Liste** : collections d'éléments selon leur ordre saisie
 
 * `LPUSH` : ajoute des éléments à la tête de la liste.
 * `LRANGE` : récupère les éléments de la liste.
@@ -460,6 +464,11 @@ LRANGE tasks 0 -1
 
 
 </div>
+
+---
+
+![](./assets/key-value-data-stores-2-v2-920x612.png.webp)
+
 
 
 ---

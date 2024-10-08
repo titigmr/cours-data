@@ -71,7 +71,7 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 ## Barème de la présentation
 
 - Présentation du sujet et de la problématique
-- Explication des différentes étapes de traitements de la donnée (pré-processing, collecte, valorisation ou d'exposition de la donnée)
+- Explication des différentes étapes de traitements de la donnée (collecte, pré-processing, valorisation ou d'exposition de la donnée)
 - Les briques technologiques utilisées et les raisons de leurs choix
 - Comment la solution répond à la problématique
 - Forme de la présentation
@@ -97,6 +97,60 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 - Analyse des données de subventions aux associations parisiennes https://tinyurl.com/y5be9ynp
 - Analyse et comparaison des trajets uber / Taxi à New York https://tinyurl.com/y29k2jco
 - Système de recommandation de films https://tinyurl.com/v2oynmf
+
+
+---
+
+# Introduction au Data Engineering
+
+---
+
+### Extraction des données
+
+<div class="columns">
+<div>
+
+- Récupération de données brutes
+- 
+> **Outils** : NiFi, Talend, Flink, Spark
+
+![center](./assets/extract.png)
+
+</div>
+
+<div>
+
+
+
+
+- **Nettoyage** : gestion des valeurs manquantes et des doublons.
+- **Stockage** : mise en place des brique de stockage
+- **Transformation** : normalisation, enrichissement et agrégation des données
+
+</div>
+</div>
+
+
+
+---
+
+## Préparation et transformation des données
+
+<div class="columns">
+<div>
+
+
+
+> Pandas, Spark, Bases NoSQL
+
+</div>
+
+<div>
+
+</div>
+</div>
+
+---
 
 
 ---
@@ -283,3 +337,5 @@ Les base de données relationnels (*SGBDR*)
     2. Installer la librairie python `psycopg2` et créer une connexion `sqlalchemy.engine.create_engine` avec les informations de connexions au format suivant `postgresql+psycopg2://user:password@hostname/defaultdb`
     3. Importer les tables avec la  méthode `to_csv` du `dataframe` et la connexion `sqlalchemy`
     4. Lancer dans un terminal la commande `psql -U postgres -h <hostname> -d defaultdb` pour se connecter à la base. Vérifier avec `SELECT count(*) FROM usagers` que les données sont bien présentes
+
+
