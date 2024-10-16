@@ -43,10 +43,10 @@ style: |
 1. Introduction et prise en main d'Onyxia
 > **2. Le stockage des données en NoSQL**
 3. Les systèmes de stockage distribués
-4. Le passage en productions
+4. Le passage en production
 5. Orchestration par Airflow et pratique DevOps
 6. Déploiement conteneurisé sous Kubernetes
-7. Architecture Data et MLOps
+7. Introduction au MLOps
 
 
 ---
@@ -83,7 +83,7 @@ style: |
 - **Complexité de gestion** : gestion difficile dans de grands environnements, flexibilité très faible, et nécessite une expertise pointue
 
 
-- **Gestion des données non structurées** : optimisés pour les données structurée et des schémas bien définis (JSON, images, vidéos, etc. sont difficiles à stocker)
+- **Gestion des données non structurées** : optimisés pour les données structurée et des schémas bien définis (JSON, images, etc. sont difficiles à stocker)
 
 </div>
 <div>
@@ -379,6 +379,11 @@ decode_responses=True)
 
 ---
 
+![](./assets/key-value-data-stores-2-v2-920x612.png.webp)
+
+
+---
+
 ## Structure des données
 
 
@@ -389,17 +394,18 @@ decode_responses=True)
 
 **Strings** : les données sont stockées sous toutes formes de données (nombres, chaine, image, etc.)
 
-* `SET` : associe la clé `mykey` à la valeur `hello`
-* `GET` : récupère la valeur associée à `mykey`
-* `DEL` : supprime la clé `mykey`
+* `SET` : associe une clé à une valeur
+* `GET` : récupère la valeur associée
+* `DEL` : supprime la clé
+* `GETDEL` : lit et supprime la clé ensuite
 
 
 ```bash
-SET mykey "hello"
-GET mykey
+SET user:01 "hello"
+GET user:01
 "hello"
-DEL mykey
-GET mykey
+DEL user:01
+GET user:01
 (nil)
 ```
 
@@ -421,12 +427,14 @@ MGET foo1 foo2 foo3
 ```
 
 
+> Redis permet une recherche sous la forme `GET user:*`
+
+> `TYPE` commande qui permet de récupérer le type d'une clé
 
 </div>
 
 
 ---
-
 
 <div class="columns">
 
@@ -434,9 +442,10 @@ MGET foo1 foo2 foo3
 
 **Hashage** : clés associées à un ensemble de sous-clés et de valeurs accessibles
 
-* `HSET` : ajoute des sous-clés et valeurs à un objet
+* `HSET`, `HDEL`, `HGET` : ajoute, récupére ou supprime une sous-clé et une valeur à un objet
 * `HGETALL` : récupère toutes les sous-clés et valeurs associées
 * `HKEYS` : affiche toutes les clés
+* `HEXISTS` : vérifie si une sous-clé existe
 
 ```bash
 HSET user:1001 name "Alice" age "30"
@@ -449,9 +458,9 @@ HGETALL user:1001
 
 **Liste** : collections d'éléments selon leur ordre saisie
 
-* `LPUSH` : ajoute des éléments à la tête de la liste.
+* `LPUSH`, `LPOP` : ajoute ou supprime un élément à la tête de la liste
 * `LRANGE` : récupère les éléments de la liste.
-* `LREM` : supprime des valeurs de la liste
+* `LINDEX` : récupère la valeur d'une liste à un index
 
 ```bash
 LPUSH tasks "task1"
@@ -461,15 +470,45 @@ LRANGE tasks 0 -1
 2) "task2"
 ```
 
-
-
 </div>
 
 ---
 
-![](./assets/key-value-data-stores-2-v2-920x612.png.webp)
+<div class="columns">
+
+<div>
+
+**Set** : collections unique de valeurs non ordonnées, utile pour des comparaisons
+
+* `SADD`, `SREM`, `SGET` : ajoute, supprime ou récupére un élement d'un set
+* `SINTER`, `SDIFF` : récupère les valeurs communes ou différentes entre deux sets
+* `SISMEMBER` : vérifie pour une clé si la valeur existe
+
+```bash
+SADD abo:01 lundi mardi mercredi jeudi
+SADD abo:02 lundi dimanche
+SINTER abo:01 abo:02
+"lundi"
+```
+
+</div>
+<div>
+
+**Sorted Set** : collections d'éléments ou chaque élément est associé à un score
+
+* `ZADD`, `ZREM` : ajoute ou supprime un élément à la tête de la liste
+* `ZRANK`, `ZREVRANK` : obtient le rang associé à une valeur par rapport à son score (ascendant ou descendant)
+* `ZRANGE` : permet de générer un top par rapport aux scores des valeurs entre deux index (-1 pour la dernière valeur)
+
+```bash
+ZADD gagnants user1 90 user2 30 user3 50
+ZRANK gagnants user2
+"2"
+```
 
 
+
+</div>
 
 ---
 ## Autres options
@@ -510,8 +549,6 @@ SETEX foo 100 "bar"
 
 <div class="columns">
 
-
-
 <div>
 
 **Options d'expiration**
@@ -546,6 +583,53 @@ GET foo
 (nil)
 GET bar
 "Hello World"
+```
+
+</div>
+</div>
+
+---
+
+
+
+**Gérer les données geospatiales**
+
+<div class="columns">
+
+<div>
+
+Ajouter des données geospatiales
+
+```bash
+GEOADD Paris 2.229307 48.896676 "La Defense Arena"
+GEOADD Paris 2.321951 48.842138 "Tour Montparnasse"
+GEOADD Paris 2.294481 48.858370 "Tour Eiffel"
+```
+Recherche d'éléments les plus proches selon la localisation
+
+```bash
+GEOSEARCH Paris FROMLONLAT 2.322214 48.865840
+BYRADIUS 5 Km WITHDIST
+1) 1) "Tour Eiffel"
+   2) "2.1928"
+2) 1) "Tour Montparnasse"
+   2) "2.6362"
+```
+
+</div>
+<div>
+
+Recherche de distance à partir d'un membre
+
+```bash
+GEOSEARCH Paris FROMMEMBER "La Defense Arena"
+BYRADIUS 10 km WITHDIST
+1) 1) "La Defense Arena"
+   2) "0.0000"
+2) 1) "Tour Eiffel"
+   2) "6.3942"
+3) 1) "Tour Montparnasse"
+   2) "9.0963"
 ```
 
 </div>
@@ -792,6 +876,22 @@ Combiner l'ensemble des données au sein d'un même document plutôt que d'utili
 
 ---
 
+## Les types de données MongoDB
+
+<div class="columns">
+
+<div>
+
+
+</div>
+<div>
+
+**Le type ObjectID**
+</div>
+</div>
+
+
+---
 
 
 <div class="columns"> <div>
@@ -1196,14 +1296,36 @@ db.createView( "sales", "orders", [
 
 ---
 
+## Comparaison SQL et MongoDB
+
+<div class="columns">
+<div>
+
+- Une page de la documentation est dédié à la comparaison aux équivalences entre MongoDB et le SQL :
+
+ [https://www.mongodb.com/docs/manual/reference/sql-comparison/](https://www.mongodb.com/docs/manual/reference/sql-comparison/)
+
+</div>
+<div>
+
+![center](./assets/sql-mongo.png)
+
+</div>
+</div>
+
+
+---
+
 ## Exercice
 
 
-1. Lancer un service mongodb sur Onyxia
-2. Insérer les données des deux `csv` dans chacun une collection
-3. Mettre en place une dénormalisation des données 
-4. 
-
+1. Lancer un service `MongoDB` sur Onyxia
+2. Insérer les données des deux précédents `csv` dans une collection chacune
+3. Mettre en place une dénormalisation des données (dans une nouvelle collection) afin d'éviter la recherche par jointure
+4. Effectuer les différentes requêtes d'analyses suivantes :
+- récupérer les données
+- effectuer un comptage pour 
+- ...
 
 
 ---
