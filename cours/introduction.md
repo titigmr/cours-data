@@ -42,12 +42,11 @@ style: |
 ## Séances
 
 > **1. Introduction et prise en main d'Onyxia**
-1. Le stockage des données en NoSQL
-2. Les systèmes de stockage distribués
-3. Le passage en production
-4. Orchestration par Airflow et pratique DevOps
-5. Déploiement conteneurisé sous Kubernetes
-6. Introduction au MLOps
+2. Le stockage des données en NoSQL
+3. Les systèmes de stockage distribués
+4. Le passage en production
+5. Orchestration par Airflow et pratique DevOps
+6. Déploiement conteneurisé sous Kubernetes
 
 
 ---
@@ -144,7 +143,7 @@ Les méthodes de collecte de données varient en fonction de la source, du volum
 <div>
 
 
-- **Collecte par API et service web** : récupération de données à la demande en utilisant des requêtes HTTP
+- **Collecte par API** : récupération de données à la demande en utilisant des requêtes HTTP
 > Outils : requests, Postman, `HTTPie`
 
 *Prendre en compte le rate limiting, pas adapté pour de gros volumes, utile pour de l'enrichissement*
@@ -338,14 +337,14 @@ Le stockage des données peut être de différentes formes
 ## # Concept : OLAP vs OLTP
 
 
-||OLAP|OLTP|
-|---|---|---|
-|**Défintion**|*OnLine Analytical Processing*|*OnLine Transactional Processing*|
-|**Objectif**|Traiter le maximum de lignes pour de l'analyse | Lire et modifier les données le plus rapidement possible|
-|**Requête**|Requêtes simples|Requêtes complexes|
-|**Temps**|En millisecondes|Entre la seconde et la minute|
-|**Stockage**| Base relationnelle|Data Warehouse|
-|**Source**|Source de la donnée|Bases OLTP|
+|               | OLAP                                           | OLTP                                                     |
+| ------------- | ---------------------------------------------- | -------------------------------------------------------- |
+| **Défintion** | *OnLine Analytical Processing*                 | *OnLine Transactional Processing*                        |
+| **Objectif**  | Traiter le maximum de lignes pour de l'analyse | Lire et modifier les données le plus rapidement possible |
+| **Requête**   | Requêtes simples                               | Requêtes complexes                                       |
+| **Temps**     | En millisecondes                               | Entre la seconde et la minute                            |
+| **Stockage**  | Base relationnelle                             | Data Warehouse                                           |
+| **Source**    | Source de la donnée                            | Bases OLTP                                               |
 
 ---
 
@@ -515,7 +514,7 @@ Le stockage des données peut être de différentes formes
 1. Se connecter à Onyxia et s'y inscrire avec son mail de l'Université (`Paris-Saclay` ou `Evry`)
 2. Télécharger les fichiers `.csv` suivant [usagers-2022.csv](https://www.data.gouv.fr/fr/datasets/r/62c20524-d442-46f5-bfd8-982c59763ec8) et [vehicules-2022.csv](https://www.data.gouv.fr/fr/datasets/r/c9742921-4427-41e5-81bc-f13af8bc31a0) sur votre poste. Les importer dans l'explorateur de fichier S3 et le consulter via l'exporateur de données
 
-3. Lancer un service `jupyter-python` et changer la configuration `role` en `admin`  dans `Kubernetes` et activer `Enable custom service port` dans `Networking`
+3. Lancer un service `jupyter-python` et changer la configuration `role` en `admin`  dans `Kubernetes` et activer `Enable custom service port` dans `Networking` avec le port `8000`
 
 4. Créer un notebook et récupérer vos données depuis le S3 avec les commandes suivants :
    1. Lister les fichiers `!mc ls s3/<nom utilisateur>`

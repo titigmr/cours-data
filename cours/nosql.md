@@ -46,7 +46,6 @@ style: |
 4. Le passage en production
 5. Orchestration par Airflow et pratique DevOps
 6. Déploiement conteneurisé sous Kubernetes
-7. Introduction au MLOps
 
 
 ---
@@ -416,7 +415,7 @@ GET user:01
 
 
 
-Possibilité de faire des enregistrements multiples
+Possibilité de faire des enregistrements multiples (possible pour tous les types) ou faire des *pipelines*
 
 ```bash
 MSET foo1 "bar1" foo2 "bar2" foo3 "bar3"
@@ -426,8 +425,7 @@ MGET foo1 foo2 foo3
 3) "bar3"
 ```
 
-
-> Redis permet une recherche sous la forme `GET user:*`
+> Permet la recherche : `GET user:*`
 
 > `TYPE` commande qui permet de récupérer le type d'une clé
 
@@ -814,20 +812,20 @@ Les données métiers sont souvent stockées dans un format relationnel ou en `c
 
 `orders`
 
-|order_id|name|store_id
-|---|---|---|
-|0|alex|0|
-|1|alice|1|
-|2|tom|0|
+| order_id | name  | store_id |
+| -------- | ----- | -------- |
+| 0        | alex  | 0        |
+| 1        | alice | 1        |
+| 2        | tom   | 0        |
 
 
 
 `store`
 
-|store_id|store_city|store_size
-|---|---|---|
-|0|Paris|Small
-|1|Marseille|Large
+| store_id | store_city | store_size |
+| -------- | ---------- | ---------- |
+| 0        | Paris      | Small      |
+| 1        | Marseille  | Large      |
 
 
 
@@ -900,7 +898,7 @@ Combiner l'ensemble des données au sein d'un même document plutôt que d'utili
 - **Imbrication de documents** : idéal pour les relation 1-1
 - **Référence partielle** : répliquer une partie des informations couramment utilisée et référencer les détails via un id
 - **Risque des modifications** : couteux si une modification implique de modifier tous les documents
-- **Vérifier la taille des document** : dans le cas de relation 1-n, peut alourdir la taille du document (max `16Mo`)
+- **Vérifier la taille des document** : dans le cas de relation 1-n, peut alourdir la taille du document (max `16 Mo`)
 
 </div>
 <div>
@@ -1108,7 +1106,7 @@ db.collection.deleteMany({})
 ---
 
 
-## Mise à jours des données
+## Mise à jour des données
 
 <div class="columns">
 
@@ -1244,7 +1242,7 @@ chaque élément dont la valeur est un élément de la liste
 ```json
 { prodId: 100, price: 20, quantity: 125 },
 { prodId: 101, price: 10, quantity: 234 },
-{ prodId: 102, price: 15, quantity: 432 },
+{ prodId: 102, price: 15, quantity: 432 }
 ```
 
 `orders`
@@ -1463,9 +1461,8 @@ sh.shardCollection("mydb.collection", { shardKey: 1 })
 </div>
 </div>
 
-
 ---
 
-
+# Amazon S3
 
 ---
