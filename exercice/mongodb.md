@@ -1,6 +1,6 @@
 # TP : MongoDB
 
-L'objectif de ce TP est d'insérer, explorer et préparer des données concernant [l'accidentalité routière en France](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2022/#/resources). 
+L'objectif de ce TP est d'insérer, explorer et préparer des données concernant [l'accidentalité routière en France](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2022/#/resources).
 
 
 
@@ -9,17 +9,17 @@ Le descriptif des données est disponible [ici](https://www.data.gouv.fr/fr/data
 
 ## Exercice 1 : Lancer MongoDB et installer les outils de connexions
 
-Lancer un service Onyxia mongodb avec la configuration par défaut. 
+Lancer un service Onyxia mongodb avec la configuration par défaut.
 
 Dans votre instance jupyter lancer un terminal linux et installer les clients python et natif de mongodb avec les commandes suivantes :
 
-1. Récupérer le fichier `.deb` 
+1. Récupérer le fichier `.deb`
 
 ```bash
-curl -LO https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb 
+curl -LO https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
 ```
 
-2. Installer le paquet 
+2. Installer le paquet
 
 ```bash
 sudo apt install ./mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
@@ -49,7 +49,7 @@ Utiliser la [documentation en ligne de l'outil]( https://www.mongodb.com/docs/da
 
 > Il faut également retirer les `"` dans le fichier afin que mongodb puisse interpéter les types : 
 >```bash
->tr -d "\"" < vehicules-2022.tsv > vehicules-2022.tsv
+>tr -d "\"" < vehicules-2022.tsv > vehicules-2022-2.tsv
 >```
 
 

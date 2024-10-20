@@ -3,7 +3,7 @@
 
 L'objectif de cet exercice est d'implémenter une API avec le framework [FastAPI](https://fastapi.tiangolo.com/#installation).
 
-A partir d'un `id_vehicule`, cette API doit renvoyer l'ensemble des informations associées au véhicule recherché.
+A partir d'un `id_vehicule`, cette API doit renvoyer l'ensemble des informations associée au véhicule recherché.
 
 Les données proviendront de la table postgresql `vehicules`. Il faudra implémenter un système de cache via Redis si les données renvoyées sont identiques.
 
@@ -17,7 +17,6 @@ Les données proviendront de la table postgresql `vehicules`. Il faudra impléme
 2. Installer la `cli` avec `sudo apt update && sudo apt install redis`
 
 3. Se connecter à `redis` avec la commande `redis-cli -h redis` et créer une clé de type hash  `AA-000-AA` avec comme sous clé `marque` `Mercedes`, `modele` `Classe A` et `annee` `2020` pour vérifier que Redis fonctionne.
-
 
 ## Exercice 2 : lire les données de la base de données
 
@@ -71,15 +70,15 @@ curl http://localhost:8000/vehicule/813952
 pip install redis
 ```
 
-2. Dans un notebook, créer une connexion python à Redis et ajouter une clé `vehicule:813952` de type hash avec les informations correspondant à l'`id_vehicule` suivant : `813952`.
+2. Dans un notebook, créer une connexion python à Redis et ajouter une clé `vehicule:813952` de type hash avec les informations correspondant à l'`id_vehicule` suivant : `813952`
 
-2. Lire ensuite le hash précédent dans sa totalité et vérifier que les données sont correctes
+3. Lire ensuite le hash précédent dans sa totalité et vérifier que les données sont correctes
 
-3. Ajouter une expiration à la clé précédente de 60 secondes
+4. Ajouter une expiration à la clé précédente de 60 secondes
 
 ## Exercice 6 : intégrer Redis à une API
 
-1. Pour chaque nouvel appel à l'API, ajouter les données dans Redis, seulement si elles n'existent pas.
+1. Pour chaque nouvel appel à l'API, ajouter les données dans Redis, seulement si elles n'existent pas
 
 2. Pour chaque nouvel appel, ajouter une vérification de l'id dans Redis avant de lire la données dans la base de données
 

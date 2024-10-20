@@ -45,7 +45,7 @@ style: |
 2. Le stockage des données en NoSQL
 3. Les systèmes de traitement distribués
 4. Le passage en production
-5. Orchestration par Airflow et pratique DevOps
+5. Orchestration et pratique DevOps
 6. Déploiement conteneurisé sous Kubernetes
 
 
@@ -81,7 +81,7 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 
 - 6 sujets sont proposés
 - Possibilité de proposer son propre sujet mais à valider en amont
-- Date limite pour le choix du sujet avant troisième séance
+- Date limite pour le choix du sujet avant la quatrième séance
 
 
 
@@ -100,7 +100,21 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 
 ---
 
-# Introduction au Data Engineering
+# Introduction
+
+
+---
+
+## La massification des données
+
+![center h:500](./assets/intro-big-data.png)
+
+---
+
+## Définition du Big Data par les 3V
+
+
+![center](./assets/vvv.png)
 
 
 ---
@@ -115,7 +129,6 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 - **Concevoir et maintenir** les infrastructures de données (base de données, briques d'ETL, exposition de données, etc.)
 
 
-
 ---
 
 ## Pourquoi est-ce important ?
@@ -125,6 +138,7 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 - Ne pas se concentrer seulement sur les algorithmes mais aussi au cas d'usage
 - Est le socle du *Machine Learning* pour les Data Scientist
 - Importance de savoir récupérer, traiter et industraliser des données pour ses projets
+
 
 ---
 
@@ -308,12 +322,12 @@ Le stockage des données peut être de différentes formes
 <div>
 
 - **Data Warehouse** : stockage de données organisé et optimisé pour du calcul analytique
+  - couteux à mettre en place
+  - limité aux données structurées
 
 > Exemple : Amazon Redshift, Google BigQuery, Snowflake, VerticaDB
 
 *Stockage de grandes quantités de données, efficace sur des requêtes analytiques*
-
-
 
 
 </div>
@@ -321,6 +335,8 @@ Le stockage des données peut être de différentes formes
 <div>
 
 - **Data Lake** : stockage de données au format brute de tous type
+  - permet les sources variés
+  - moins couteux à mettre en place
 
 > Exemple : HDFS, Amazon S3
 

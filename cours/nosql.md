@@ -42,10 +42,10 @@ style: |
 
 1. Introduction et prise en main d'Onyxia
 > **2. Le stockage des données en NoSQL**
-1. Les systèmes de traitement distribués
-2. Le passage en production
-3. Orchestration par Airflow et pratique DevOps
-4. Déploiement conteneurisé sous Kubernetes
+3. Les systèmes de traitement distribués
+4. Le passage en production
+5. Orchestration et pratique DevOps
+6. Déploiement conteneurisé sous Kubernetes
 
 
 ---
@@ -1713,18 +1713,33 @@ Limités pour le traitement de données volumineuses
 
 ---
 
-## Format Parquet
+## Le format Parquet
 
 
 <div class="columns">
 <div>
 
+**Les propriétés**
 
-**Orienté colonne**
-- Adapté aux traitements analytiques
-Conçu pour être écrit une fois mais lu fréquemment
-Optimisé
-Compression (jusqu’à 87 % moins d’espace qu’un CSV)
-Lecture du fichier (jusqu’à 34x plus rapide qu’un CSV)
-Interopérable
-Gestion native des méta-données
+- **Orienté colonne**
+  - Adapté aux traitements analytiques
+  - Conçu pour être écrit une fois mais lu fréquemment
+- **Optimisé**
+  - Forte compression
+  - Rapidité de lecture du fichier
+  - Gestion native des méta-données
+
+</div>
+<div>
+
+
+**Le partionnement**
+
+- Division en blocs des données selon un critère
+- Optimise la lecture pour certaines requêtes
+
+![h:250 center](./assets/partitions.png)
+
+
+</div>
+</div>

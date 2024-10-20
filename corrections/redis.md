@@ -1,17 +1,10 @@
 
-# Correction exercice : Intégration de Redis avec une API
+# Correction : Redis
 
 
 L'objectif de cet exercice est d'implémenter une API avec le framework [FastAPI](https://fastapi.tiangolo.com/#installation). A partir d'un `id_vehicule`, cette API renvoit l'ensemble des informations associées au véhicule. Les données proviennent de la table `vehicules`. Il faudra implémenter un système de cache si les données renvoyées sont identiques.
 
-**Quelques pistes**
-
-1. Utiliser `pd.read_sql` pour lire les données dans la base (*attention, non recommandé pour un vrai usage*).
-2. Filtrer le jeu de données avec l'`id_vehicule` de l'appel API. Il est possible qu'il faille faire des transformations de données intermédiaire.
-3. Retourner la ligne pandas sous forme d'un dictionnaire si le véhicule existe, sinon retourner un dictionnaire vide.
-4. Pour chaque appel, ajouter les données dans `redis` si elles n'existent pas, avec un TTL de 60 secondes. Sinon renvoyer à la place les données du cache.
-
-## Méthode 1
+## Implémentation
 
 1. Installer les différentes dépendances
 
@@ -56,7 +49,7 @@ def read_vehicule(vehicule_id: str):
     return {}
 ```
 
-Ce script permer de lancer une API qui écoute sur la route `/vehicule/{vehicule_id}` afin de renvoyer les informations du véhicule demandé.
+Ce script permet de lancer une API qui écoute sur la route `/vehicule/{vehicule_id}` afin de renvoyer les informations du véhicule demandé.
 
 - Vérifie que le véhicule n'est pas dans le cache, sinon renvoit les données depuis ce cache
 - Lit la table `sql`
@@ -66,7 +59,7 @@ Ce script permer de lancer une API qui écoute sur la route `/vehicule/{vehicule
 Quelques notes :
 
 - l'id possède un formatage particulier, on applique donc une transformation à sa lecture
-- la méthode `hset`ne permet pas d'écrire un dictionnaire vide. Un contournement possible était donc de créer une clé spécifique si le véhicule n'existe pas et vérifier si cette clé est dans le cache.
+- la méthode `hset`ne permet pas d'écrire un dictionnaire vide. Un contournement possible était donc de créer une clé spécifique si le véhicule n'existait pas et vérifier si cette clé est dans le cache
 - Une autre méthode serait d'utiliser `set` et d'écrire le dictionnaire au format `string` dans redis, puis de le sérialisé en `json` lors de la lecture.
 
 
@@ -74,7 +67,7 @@ Quelques notes :
 2. Dans un autre terminal, tester un appel avec la commande `curl http://localhost:8000/vehicule/813952`. Si on rappelle ensuite l'API sur le même id, les données seront renvoyés en moins de temps
 
 
-## Méthode 2
+## Autre méthode possible avec une librairie tierce
 
 1. Installer les différentes dépendances
 
