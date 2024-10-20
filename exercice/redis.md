@@ -1,5 +1,5 @@
 
-# TP Redis
+# TP : Redis
 
 L'objectif de cet exercice est d'implémenter une API avec le framework [FastAPI](https://fastapi.tiangolo.com/#installation).
 
@@ -84,4 +84,3 @@ pip install redis
 2. Pour chaque nouvel appel, ajouter une vérification de l'id dans Redis avant de lire la données dans la base de données
 
 3. Ajouter un TTL de 60 secondes lors de l'ajout des données dans le cache
-

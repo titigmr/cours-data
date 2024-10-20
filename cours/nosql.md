@@ -42,11 +42,10 @@ style: |
 
 1. Introduction et prise en main d'Onyxia
 > **2. Le stockage des données en NoSQL**
-3. Les systèmes de stockage distribués
-4. Le passage en production
-5. Orchestration par Airflow et pratique DevOps
-6. Déploiement conteneurisé sous Kubernetes
-7. Introduction au MLOps
+1. Les systèmes de traitement distribués
+2. Le passage en production
+3. Orchestration par Airflow et pratique DevOps
+4. Déploiement conteneurisé sous Kubernetes
 
 
 ---
@@ -847,23 +846,6 @@ Combiner l'ensemble des données au sein d'un même document plutôt que d'utili
 
 ---
 
-## Les types de données MongoDB
-
-<div class="columns">
-
-<div>
-
-
-</div>
-<div>
-
-**Le type ObjectID**
-</div>
-</div>
-
-
----
-
 
 <div class="columns"> <div>
 
@@ -914,6 +896,36 @@ Combiner l'ensemble des données au sein d'un même document plutôt que d'utili
 ```
 </div>
 </div>
+
+---
+
+## Les types de données MongoDB
+
+MongoDB stocke les données sous le format `BSON` qui permet de stocker davantage d'information que le format `JSON`
+
+<div class="columns">
+
+<div>
+
+**Le type ObjectID**
+
+ID généré par MongoDB est généré à partir de plusieurs facteurs :
+- La date d'insertion au sens Unix
+- Un nombre aléatoire
+- Un compteur par rapport à la valeur insérée
+
+</div>
+<div>
+
+D'autres types :
+- **Date** afin de manipuler des dates (Timestamp)
+- **Entiers** afin de gérer l'espace de stockage (Long, Int32, Decimal128, etc.)
+
+</div>
+</div>
+
+
+
 
 ---
 
@@ -1079,7 +1091,7 @@ db.collection.deleteMany({})
 ---
 
 
-## Mise à jours des données
+## Mise à jour des données
 
 <div class="columns">
 
@@ -1208,7 +1220,7 @@ db.orders.aggregate([
 
 
 - [`unwind`](https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/) : applatit une liste à afin de produire une clé pour
-chaque élément dont la valeur est un élément de la liste
+chaque élément de la liste
 - [`$lookup`](https://www.mongodb.com/docs/atlas/atlas-stream-processing/sp-agg-lookup/) : permet de faire correspondre des colonnes d’un document avec la colonne d’un autre document
 
 `inventory`
@@ -1216,7 +1228,7 @@ chaque élément dont la valeur est un élément de la liste
 { prodId: 100, price: 20, quantity: 125 },
 { prodId: 101, price: 10, quantity: 234 },
 { prodId: 101, price: 10, quantity: 20 },
-{ prodId: 102, price: 15, quantity: 432 },
+{ prodId: 102, price: 15, quantity: 432 }
 ```
 
 `orders`
@@ -1230,11 +1242,17 @@ chaque élément dont la valeur est un élément de la liste
 </div>
 <div>
 
-<br>
+Sur la table `orders` la pipeline suivante :
+
 
 ```json
-{ $lookup:
-  {from: "inventory", localField: "prodId", foreignField: "prodId", as: "inventoryDocs"}
+{$lookup:
+  {
+    from: "inventory",
+    localField: "prodId",
+    foreignField: "prodId",
+    as: "inventoryDocs"
+  }
 }
 ```
 
@@ -1261,15 +1279,6 @@ chaque élément dont la valeur est un élément de la liste
  'numPurchased': 10,
  'orderId': 202,
  'prodId': 101}
-{'_id': ObjectId('6714d5fc313563a5c86e36cf'),
- 'custid': 303,
- 'inventoryDocs': [{'_id': ObjectId('6714d5fa313563a5c86e36cc'),
-                    'price': 15,
-                    'prodId': 102,
-                    'quantity': 432}],
- 'numPurchased': 5,
- 'orderId': 203,
- 'prodId': 102}
 ```
 
 </div>
@@ -1338,6 +1347,9 @@ Plusieurs types d'index :
 ---
 
 ## # Concept : Réplication vs Partionnement
+
+
+![h:500 center](./assets/replication-distrib.png)
 
 ---
 
@@ -1438,3 +1450,281 @@ sh.shardCollection("mydb.collection", { shardKey: 1 })
 
 ---
 
+# Amazon S3 et les formats de données
+
+---
+
+<div class="columns">
+<div>
+
+![h:100](./assets/s3-logo.png)
+
+**S3** pour *Simple Storage Service* est un Service de stockage répliqué et évolutif sous forme d’objets sur le web
+
+- Stockage (réplication, cycle de vie, opérations par lots, etc.)
+- Diversité (tout types de données, site web, etc.)
+- Accessibilité (protocole HTTP)
+- Gestion des accès (via les ACL)
+
+</div>
+<div>
+
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+![](./assets/bucket-s3.png)
+
+</div>
+</div>
+
+---
+
+<div class="columns">
+<div>
+
+**Bucket**
+
+- Conteneur pouvant contenir des fichiers
+- Gestion des accès et des actions possibles
+- Peut servir des sites web statiques
+- Peut fournir des évènements selon des actions
+
+</div>
+<div>
+
+
+**Objets**
+- Les objets sont des fichiers accessibles par une URL sur le web
+- Les objets peuvent êtres chiffrés sur le disque
+- Manipulation des fichiers comme dans un système de fichier classique (`mv`, `ls`, `rm`, `cp`, etc.)
+- Toutes les manipulations se font par le protocole `HTTP`
+
+</div>
+</div>
+
+---
+
+## Utilisation avec S3cmd
+
+`S3cmd` est un client écrit en python pour manipuler le stockage S3
+
+
+<div class="columns">
+<div>
+
+Pour créer ou supprimer un bucket
+
+```bash
+s3cmd mb s3://BUCKET
+s3cmd rb s3://BUCKET
+```
+
+Pour lister les buckets ou les fichiers d'un bucket
+
+```bash
+s3cmd ls [s3://BUCKET[/PREFIX]]
+```
+
+> S3cmd se base sur la librairie python `boto3`
+
+
+</div>
+<div>
+
+Envoyer un fichier
+
+```bash
+s3cmd put FILE [FILE...] s3://BUCKET[/PREFIX]
+```
+
+Télécharger ou supprimer un fichier
+
+```bash
+s3cmd get s3://BUCKET/OBJECT LOCAL_FILE
+s3cmd rm s3://BUCKET/OBJECT
+```
+
+Copier un fichier d'un bucket à un autre
+
+```bash
+s3cmd cp s3://BUCKET1/OBJECT1 s3://BUCKET2[/OBJECT2]
+```
+
+</div>
+</div>
+
+
+---
+
+
+## Expiration des objets
+
+<div class="columns">
+<div>
+
+Une lifecycle configuration est composé d’un ensemble de règle (format JSON ou XML) avec comme propriétés :
+
+- **id** : identifiant de la règle
+- **status** : activé ou désactivé
+- **filter** : permet de filtrer des objets avec des conditions (par exemple par un prefix, par tag, taille d’objet, etc.)
+- **lifecycle action** : le type d’action à effectuer (transition, expiration, annuler les upload en plusieurs partie incomplets, etc.)
+
+</div>
+<div>
+
+![](./assets/lf-s3.png)
+
+![](./assets/lifecycle-expire.png)
+
+</div>
+</div>
+
+---
+
+## Gestion des permissions sur les objets
+
+<div class="columns">
+<div>
+
+- **sid**: nom de l’ACL
+- **resource** : L’Amazon ressource name concernée
+  -  `"Resource": "arn:aws:s3:::bucket_name"`
+  -  `"Resource": "arn:aws:s3:::bucket_name/*`
+- **actions** : action effectuée (`s3:ListBucket` par exemple pour lister les objets)
+- **effect** : l’effet recherché, `allow` ou `deny`, par défaut `deny`
+- **principal** : le sujet de la policy
+
+</div>
+<div>
+
+<br>
+
+<br>
+
+<br>
+
+![center](./assets/acl-s3.png)
+
+</div>
+</div>
+
+---
+
+## Utilisation avec S3cmd
+
+<div class="columns">
+<div>
+
+Pour appliquer une bucket policy depuis un fichier local ou la supprimer
+
+
+```bash
+s3cmd setpolicy FILE s3://BUCKET
+s3cmd delpolicy s3://BUCKET
+```
+
+Pour afficher les informations associés à un bucket (policy, etc.)
+```bash
+s3cmd info s3://BUCKET[/OBJECT]
+```
+
+</div>
+<div>
+
+Envoyer un fichier
+
+```bash
+s3cmd put FILE [FILE...] s3://BUCKET[/PREFIX]
+```
+
+Appliquer une lifecycle policy depuis un fichier local, ou la visualiser / supprimer
+
+```bash
+
+s3cmd setlifecycle FILE s3://BUCKET
+s3cmd getlifecycle s3://BUCKET
+s3cmd dellifecycle s3://BUCKET
+```
+
+</div>
+</div>
+
+
+
+---
+
+<div class="columns">
+<div>
+
+Les implémentations de s3 sont nombreuses :
+- Pas toutes les fonctionnalités toujours présentes
+- Il existe des versions open-source
+
+</div>
+<div>
+
+![](./assets/s3-techno.png)
+
+
+</div>
+</div>
+
+---
+
+## Formats de données
+
+
+
+Le choix d’un format de données pour du stockage doit se faire selon les critères suivants :
+- le public
+- la finalité (traitement, analyse, diffusion)
+- la volumétrie
+- la compatibilité des outils
+
+
+---
+
+## Limites des formats usuels
+
+<div class="columns">
+<div>
+
+Les formats usuels (CSV, JSON, XML) sont utiles pour :
+
+- Le traitement de faibles volumes de données
+- La diffusion de données
+
+</div>
+<div>
+
+Limités pour le traitement de données volumineuses
+
+- **Non-compressés** : espace disque élevé
+- **Orientés ligne** : peu adaptés aux traitements analytiques
+
+</div>
+</div>
+
+---
+
+## Format Parquet
+
+
+<div class="columns">
+<div>
+
+
+**Orienté colonne**
+- Adapté aux traitements analytiques
+Conçu pour être écrit une fois mais lu fréquemment
+Optimisé
+Compression (jusqu’à 87 % moins d’espace qu’un CSV)
+Lecture du fichier (jusqu’à 34x plus rapide qu’un CSV)
+Interopérable
+Gestion native des méta-données

@@ -1,12 +1,10 @@
 
-## TP Onyxia
+# TP : Onyxia
 
 L'objectif de cet exercice est de prendre en main la plateforme [Onyxia](http://datalab.sspcloud.fr/).
 
 
 ##  Exercice 1 : Configuration d'Onyxia
-
-
 
 1. Se connecter à Onyxia et s'y inscrire avec son mail de l'Université (Paris-Saclay ou Evry)
 
@@ -17,17 +15,14 @@ L'objectif de cet exercice est de prendre en main la plateforme [Onyxia](http://
 
 > La documentation associée est [ici](https://docs.sspcloud.fr/content/version-control.html)
 
-
 ## Exercice 2 : Démarrer un service à partir d'un projet
 
 > Une documentation de la prise en main de la plateforme est disponible [ici](https://docs.sspcloud.fr).
-
 
 1. Lancer un service `vscode-python` sans configuration et s'y connecter à partir des informations du service
 2. Supprimer ensuite le service crée précédemment
 
 ## Exercice 3 : Utiliser l'explorateur de données
-
 
 Télécharger les fichiers `csv` suivant [usagers-2022.csv](https://www.data.gouv.fr/fr/datasets/r/62c20524-d442-46f5-bfd8-982c59763ec8) et [vehicules-2022.csv](https://www.data.gouv.fr/fr/datasets/r/c9742921-4427-41e5-81bc-f13af8bc31a0) sur votre poste. Les importer dans l'explorateur de fichier S3 et les consulter via l'exporateur de données. L'explication du jeu de données est disponible [ici](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2022/).
 
@@ -44,8 +39,8 @@ Télécharger les fichiers `csv` suivant [usagers-2022.csv](https://www.data.gou
 ## Exercice 5 : Exposer un site web via Onyxia
 
 1. Lancer un service `jupyter-python` et changer les configurations suivantes :
-   1.  `role` en `admin`  dans `Kubernetes`
-   2.  Activer `Enable custom service port` dans `Networking` avec le port `8000`
+   1. `role` en `admin`  dans `Kubernetes`
+   2. Activer `Enable custom service port` dans `Networking` avec le port `8000`
 
 
 2. Créer un notebook et récupérer vos données depuis le S3 avec les commandes suivants dans une cellule jupyter :
@@ -69,7 +64,6 @@ Télécharger les fichiers `csv` suivant [usagers-2022.csv](https://www.data.gou
     2. Installer la librairie python `psycopg2` et créer une connexion `sqlalchemy.engine.create_engine` avec les informations de connexions au format suivant `postgresql+psycopg2://user:password@hostname/defaultdb`
     3. Importer les tables avec la  méthode `to_csv` du `dataframe` et la connexion `sqlalchemy`
     4. Lancer dans un terminal la commande `psql -U postgres -h <hostname> -d defaultdb` pour se connecter à la base. Vérifier avec `SELECT count(*) FROM usagers` que les données sont bien présentes
-
 
 ## Exercice 7 : Sauvegarder votre travail
 

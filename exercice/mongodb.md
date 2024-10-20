@@ -100,3 +100,4 @@ L'objectif de cet exercice va être d'associer les véhicules à chaque usager e
 ## Exercice 6 : créer une pipeline de données
 
 1. Calculer le nombre total d’accidents par type de véhicule. Quels types de véhicules sont les plus concernés ?
+2. Rajouter les données concernant les `lieux` dans une collection et effectuer une jointure afin récupérer le nombre d'accidents dans les autoroutes

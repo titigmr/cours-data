@@ -43,7 +43,7 @@ style: |
 
 > **1. Introduction et prise en main d'Onyxia**
 2. Le stockage des données en NoSQL
-3. Les systèmes de stockage distribués
+3. Les systèmes de traitement distribués
 4. Le passage en production
 5. Orchestration par Airflow et pratique DevOps
 6. Déploiement conteneurisé sous Kubernetes
@@ -289,7 +289,7 @@ Le stockage des données peut être de différentes formes
 
 <div>
 
-- **Bases de données NoSQL** : utilisée pour les données semi-structurées, offrant une grande flexibilité
+- **Bases de données NoSQL** : utilisées pour les données semi-structurées, offrant une grande flexibilité
 
 > Exemple : MongoDB, Cassandra, ElasticSearch, Redis
 
@@ -307,7 +307,7 @@ Le stockage des données peut être de différentes formes
 <div class="columns">
 <div>
 
-- **Data Warehouse** : stockage de données organisées et optimisées pour du calcul analytique
+- **Data Warehouse** : stockage de données organisé et optimisé pour du calcul analytique
 
 > Exemple : Amazon Redshift, Google BigQuery, Snowflake, VerticaDB
 
