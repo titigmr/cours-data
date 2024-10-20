@@ -413,6 +413,27 @@ Le stockage des données peut être de différentes formes
 
 ---
 
+## Diffuser et exposer les données
+
+<div class="columns">
+<div>
+
+Diffuser les données sous la forme de **tableaux de bords** exploitables (*Data Analysis*)
+
+
+Retravailler la donnée afin de **la redistribuer** sous une forme compréhensible (via API, ou fichiers)
+
+</div>
+<div>
+
+![](./assets/dashboard.png)
+
+
+</div>
+</div>
+
+---
+
 # Prise en main d'Onyxia
 
 ---
@@ -508,17 +529,9 @@ Le stockage des données peut être de différentes formes
 
 ---
 
-##  Exercice
+##  Un catalogue de services complet pour les projets de data science
 
-
-1. Se connecter à Onyxia et s'y inscrire avec son mail de l'Université (`Paris-Saclay` ou `Evry`)
-2. Télécharger les fichiers `.csv` suivant [usagers-2022.csv](https://www.data.gouv.fr/fr/datasets/r/62c20524-d442-46f5-bfd8-982c59763ec8) et [vehicules-2022.csv](https://www.data.gouv.fr/fr/datasets/r/c9742921-4427-41e5-81bc-f13af8bc31a0) sur votre poste. Les importer dans l'explorateur de fichier S3 et le consulter via l'exporateur de données
-
-3. Lancer un service `jupyter-python` et changer la configuration `role` en `admin`  dans `Kubernetes` et activer `Enable custom service port` dans `Networking` avec le port `8000`
-
-4. Créer un notebook et récupérer vos données depuis le S3 avec les commandes suivants :
-   1. Lister les fichiers `!mc ls s3/<nom utilisateur>`
-   2. Télécharger le fichier `!mc cp s3/<nom utilisateur>/<nom du fichier> ./`
+![center](./assets/catalog-high-level.png)
 
 ---
 
@@ -585,15 +598,5 @@ Les base de données relationnels (*SGBDR*)
 - **DCL** (Data Control Language) : `GRANT`, `REVOKE`
 - **TCL** (Transaction Control Language) : `COMMIT`, `ROLLBACK`, `SAVEPOINT`
 
----
-
-## Exercice
-
-1. Lancer un service `PostgreSQL`
-2. Se connecter au service `jupyter-python` et importer les deux `csv` dans la base de données `postgresql`
-    1. Dans un notebook, lire les `csv` avec `pandas`
-    2. Installer la librairie python `psycopg2` et créer une connexion `sqlalchemy.engine.create_engine` avec les informations de connexions au format suivant `postgresql+psycopg2://user:password@hostname/defaultdb`
-    3. Importer les tables avec la  méthode `to_csv` du `dataframe` et la connexion `sqlalchemy`
-    4. Lancer dans un terminal la commande `psql -U postgres -h <hostname> -d defaultdb` pour se connecter à la base. Vérifier avec `SELECT count(*) FROM usagers` que les données sont bien présentes
 
 

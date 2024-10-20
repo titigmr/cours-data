@@ -94,7 +94,9 @@ L'objectif de cet exercice va être d'associer les véhicules à chaque usager e
 
 2. Rechercher les documents concernant les femmes impliquées dans un accident et lorsque l'un des véhicules est un deux roues motorisé
 
-3. Rechercher les accidents avec plus de 2 véhicules impliqués
+3. Rechercher les accidents avec  3 ou 4 véhicules impliqués
 
 
 ## Exercice 6 : créer une pipeline de données
+
+1. Calculer le nombre total d’accidents par type de véhicule. Quels types de véhicules sont les plus concernés ?

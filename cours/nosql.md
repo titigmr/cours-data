@@ -46,6 +46,7 @@ style: |
 4. Le passage en production
 5. Orchestration par Airflow et pratique DevOps
 6. Déploiement conteneurisé sous Kubernetes
+7. Introduction au MLOps
 
 
 ---
@@ -415,7 +416,7 @@ GET user:01
 
 
 
-Possibilité de faire des enregistrements multiples (possible pour tous les types) ou faire des *pipelines*
+Possibilité de faire des enregistrements multiples
 
 ```bash
 MSET foo1 "bar1" foo2 "bar2" foo3 "bar3"
@@ -425,7 +426,8 @@ MGET foo1 foo2 foo3
 3) "bar3"
 ```
 
-> Permet la recherche : `GET user:*`
+
+> Redis permet une recherche sous la forme `GET user:*`
 
 > `TYPE` commande qui permet de récupérer le type d'une clé
 
@@ -714,35 +716,6 @@ UNSUBSCRIBE mychannel
 
 ---
 
-## Exercice 1
-
-
-1. Installer `redis`. Cette base de données ne fait pas partie du catalogue Onyxia. Pour l'installer, lancer un terminal puis lancer la commande :
-```bash
-  kubectl run redis --image redis && kubectl expose pod/redis --port 6379
-```
-
-2. Installer la `cli` avec `sudo apt update && sudo apt install redis`
-
-3. Se connecter à `redis` avec la commande `redis-cli -h redis`
-
-4. Créer un hashage  `AA-000-AA` avec comme sous clé `marque` `Mercedes`, `modele` `Classe A` et `annee` `2020`. Lui appliquer ensuite une expiration de 60 secondes.
-
----
-
-## Exercice 2 : Intégration de Redis avec une API
-
-L'objectif de cet exercice est d'implémenter une API avec le framework [FastAPI](https://fastapi.tiangolo.com/#installation). A partir d'un `id_vehicule`, cette API renvoit l'ensemble des informations associées au véhicule. Les données proviennent de la table `vehicules`. Il faudra implémenter un système de cache si les données renvoyées sont identiques.
-
-**Quelques pistes**
-
-1. Utiliser `pd.read_sql` pour lire les données dans la base (*attention, non recommandé pour un vrai usage*).
-2. Filtrer le jeu de données avec l'`id_vehicule` de l'appel API. Il est possible qu'il faille faire des transformations de données intermédiaire.
-3. Retourner la ligne pandas sous forme d'un dictionnaire si le véhicule existe, sinon retourner un dictionnaire vide.
-4. Pour chaque appel, ajouter les données dans `redis` si elles n'existent pas avec un TTL de 60 secondes. Sinon renvoyer à la place les données du cache.
-
----
-
 
 # MongoDB
 
@@ -812,20 +785,20 @@ Les données métiers sont souvent stockées dans un format relationnel ou en `c
 
 `orders`
 
-| order_id | name  | store_id |
-| -------- | ----- | -------- |
-| 0        | alex  | 0        |
-| 1        | alice | 1        |
-| 2        | tom   | 0        |
+|order_id|name|store_id
+|---|---|---|
+|0|alex|0|
+|1|alice|1|
+|2|tom|0|
 
 
 
 `store`
 
-| store_id | store_city | store_size |
-| -------- | ---------- | ---------- |
-| 0        | Paris      | Small      |
-| 1        | Marseille  | Large      |
+|store_id|store_city|store_size
+|---|---|---|
+|0|Paris|Small
+|1|Marseille|Large
 
 
 
@@ -895,10 +868,10 @@ Combiner l'ensemble des données au sein d'un même document plutôt que d'utili
 <div class="columns"> <div>
 
 
-- **Imbrication de documents** : idéal pour les relation 1-1
-- **Référence partielle** : répliquer une partie des informations couramment utilisée et référencer les détails via un id
-- **Risque des modifications** : couteux si une modification implique de modifier tous les documents
-- **Vérifier la taille des document** : dans le cas de relation 1-n, peut alourdir la taille du document (max `16 Mo`)
+- **Imbrication de documents** : idéal pour les relations 1-1
+- **Référence partielle** : répliquer une partie des informations couramment utilisée et référencer les détails via un id car :
+  - **risque des modifications** : couteux si une modification implique de modifier tous les documents
+  - **vérifier la taille des document** : dans le cas de relation 1-n, peut alourdir la taille du document (max `16Mo`)
 
 </div>
 <div>
@@ -1095,7 +1068,7 @@ db.collection.deleteMany({ age: { $lt: 30 } })
 <br>
 
 ```json
-db.collection.deleteMany({})                 
+db.collection.deleteMany({})                  
 ```
 
 </div>
@@ -1106,7 +1079,7 @@ db.collection.deleteMany({})
 ---
 
 
-## Mise à jour des données
+## Mise à jours des données
 
 <div class="columns">
 
@@ -1202,7 +1175,7 @@ db.orders.aggregate([
 ]);
 ```
 
-- `merge` : permet d’écrire le résultat dans un document (toujours en dernière étape)
+- [`merge`](https://www.mongodb.com/docs/atlas/data-federation/supported-unsupported/pipeline/merge/) : permet d’écrire le résultat dans un document (toujours en dernière étape)
 
 ```json
 { $merge: { into: "myOutput", on: "_id", 
@@ -1215,11 +1188,11 @@ db.orders.aggregate([
 </div>
 <div>
 
-- `$match` : permet de filtrer les documents afin de les passer à l’étape suivante
+- [`$match`](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/) : permet de filtrer les documents afin de les passer à l’étape suivante
 
-- `$project` : permet de sélectionner les champs à passer dans la prochaine étape d’une pipeline
+- [`$project`](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/) : permet de sélectionner les champs à passer dans la prochaine étape d’une pipeline
 
-- `$group` : permet de regrouper des données et d’y appliquer une expression à chaque groupe
+- [`$group`](https://www.mongodb.com/docs/manual/reference/operator/aggregation/group/) : permet de regrouper des données et d’y appliquer une expression à chaque groupe
 
 > D'autres étapes sont disponibles [ici](https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/)
 
@@ -1234,15 +1207,16 @@ db.orders.aggregate([
 <div>
 
 
-- `uwind` : applatit une liste à afin de produire une clé pour
+- [`unwind`](https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/) : applatit une liste à afin de produire une clé pour
 chaque élément dont la valeur est un élément de la liste
-- `$lookup` : permet de faire correspondre des colonnes d’un document avec la colonne d’un autre document
+- [`$lookup`](https://www.mongodb.com/docs/atlas/atlas-stream-processing/sp-agg-lookup/) : permet de faire correspondre des colonnes d’un document avec la colonne d’un autre document
 
 `inventory`
 ```json
 { prodId: 100, price: 20, quantity: 125 },
 { prodId: 101, price: 10, quantity: 234 },
-{ prodId: 102, price: 15, quantity: 432 }
+{ prodId: 101, price: 10, quantity: 20 },
+{ prodId: 102, price: 15, quantity: 432 },
 ```
 
 `orders`
@@ -1256,37 +1230,46 @@ chaque élément dont la valeur est un élément de la liste
 </div>
 <div>
 
-*Création d'une vue `sales` à partir de la collection `orders`*
+<br>
 
 ```json
-db.createView( "sales", "orders", [
-   {
-      $lookup:
-         {
-            from: "inventory", localField: "prodId",
-            foreignField: "prodId",
-            as: "inventoryDocs"
-         }
-   },
-   {
-      $project:
-         {
-           _id: 0, prodId: 1,
-           orderId: 1,
-           numPurchased: 1,
-           price: "$inventoryDocs.price"
-         }
-   },
-      { $unwind: "$price" }
-] )
+{ $lookup:
+  {from: "inventory", localField: "prodId", foreignField: "prodId", as: "inventoryDocs"}
+}
 ```
 
-`sales`
 ```json
-{ orderId: 201, prodId: 100, numPurchased: 20, price: 20 },
-{ orderId: 202, prodId: 101, numPurchased: 10, price: 10 },
-{ orderId: 203, prodId: 102, numPurchased: 5, price: 15 },
-{ orderId: 204, prodId: 103, numPurchased: 15, price: 17 },
+{'_id': ObjectId('6714d5fc313563a5c86e36cd'),
+ 'custid': 301,
+ 'inventoryDocs': [{'_id': ObjectId('6714d5fa313563a5c86e36c9'),
+                    'price': 20,
+                    'prodId': 100,
+                    'quantity': 125}],
+ 'numPurchased': 20,
+ 'orderId': 201,
+ 'prodId': 100}
+{'_id': ObjectId('6714d5fc313563a5c86e36ce'),
+ 'custid': 302,
+ 'inventoryDocs': [{'_id': ObjectId('6714d5fa313563a5c86e36ca'),
+                    'price': 10,
+                    'prodId': 101,
+                    'quantity': 234},
+                   {'_id': ObjectId('6714d5fa313563a5c86e36cb'),
+                    'price': 10,
+                    'prodId': 101,
+                    'quantity': 20}],
+ 'numPurchased': 10,
+ 'orderId': 202,
+ 'prodId': 101}
+{'_id': ObjectId('6714d5fc313563a5c86e36cf'),
+ 'custid': 303,
+ 'inventoryDocs': [{'_id': ObjectId('6714d5fa313563a5c86e36cc'),
+                    'price': 15,
+                    'prodId': 102,
+                    'quantity': 432}],
+ 'numPurchased': 5,
+ 'orderId': 203,
+ 'prodId': 102}
 ```
 
 </div>
@@ -1311,19 +1294,6 @@ db.createView( "sales", "orders", [
 </div>
 </div>
 
-
----
-
-## Exercice
-
-
-1. Lancer un service `MongoDB` sur Onyxia
-2. Insérer les données des deux précédents `csv` dans une collection chacune
-3. Mettre en place une dénormalisation des données (dans une nouvelle collection) afin d'éviter la recherche par jointure
-4. Effectuer les différentes requêtes d'analyses suivantes :
-- récupérer les données
-- effectuer un comptage pour 
-- ...
 
 
 ---
@@ -1367,6 +1337,10 @@ Plusieurs types d'index :
 
 ---
 
+## # Concept : Réplication vs Partionnement
+
+---
+
 ## Optimisation des performances : sharding
 
 <div class="columns">
@@ -1404,7 +1378,7 @@ sh.enableSharding("mydb")
 - Cardinalité large (nombre de `chunks`)
 - Fréquence faible (uniformément répartie)
 
-Deux type de *sharding* :
+Deux types de *sharding* :
   - **Hashed sharding** : fonction appliquée à la clé
     - Accès aléatoires
     - Scalabilité plus simple
@@ -1461,8 +1435,6 @@ sh.shardCollection("mydb.collection", { shardKey: 1 })
 </div>
 </div>
 
----
-
-# Amazon S3
 
 ---
+
