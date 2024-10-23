@@ -148,6 +148,37 @@ Présenter par groupe (de 4 ou 5 personnes) un POC (*Proof of Concept*) d'une ch
 
 ---
 
+## # Concept : Qu'est qu'une API
+
+<div class="columns">
+<div>
+
+> Une API (application programming interface ou « interface de programmation d’application ») est une interface logicielle qui permet de « connecter » un logiciel ou un service à un autre logiciel ou service afin d’échanger des données et des fonctionnalités.
+CNIL
+
+*Définition peu informative car scikit-learn, Docker, etc. sont des APIs*
+
+</div>
+<div>
+
+**API RESTful** : API conforme au style d’architecture REST
+- Communication via le protocole HTTP
+  - On requête un endpoint (API Sirene)
+  - Avec des méthodes HTTP (GET, POST, etc.)
+- Spécification OpenAPI
+
+
+
+</div>
+</div>
+
+
+
+
+
+---
+
+
 ## La collecte des données
 
 
