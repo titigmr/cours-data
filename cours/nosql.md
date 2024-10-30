@@ -1450,6 +1450,226 @@ sh.shardCollection("mydb.collection", { shardKey: 1 })
 
 ---
 
+# Apache Cassandra
+
+---
+
+<div class="columns">
+
+<div>
+
+![h:80](./assets/Cassandra_logo.svg)
+
+- Base de données orientée colonnes
+- Cohérence finale (*eventual consistency*) et haute disponibilité
+- Architecture distribuée et sans maître unique
+- Forte scalabilité horizontale
+
+
+**Quand l'utiliser ?**
+
+- Applications nécessitant des écritures intensives et forte tolérance aux pannes
+- Stockage de séries temporelles ou temps réel
+
+
+</div>
+
+<div>
+
+
+
+<br>
+
+<br>
+
+
+![](./assets/column-family.webp)
+
+
+</div>
+</div>
+
+---
+
+## Architecture de Cassandra
+
+<div class="columns"> <div>
+
+
+- **Modèle peer-to-peer** : chaque nœud est identique et communique avec les autres (*RING*)
+   - Chacun peut recevoir de l'écriture puis propagés aux autres
+   - Détection des noeuds en panne (protocole *gossip*) et repartition de charge
+- **Scalabilité horizontale** : ajout et perte de nœuds simple
+- **Partionning** : *hachage consistant* pour mieux répartir les données entre noeuds
+
+
+</div> <div>
+
+
+![h:600](./assets/archi-cassandra.jpg)
+
+</div> </div>
+
+---
+
+## Stockage des données
+
+<div class="columns"> <div>
+
+- **CommitLog** : assure la durabilité des nouvelles écritures (journalisation pour la restauration)
+- **Memtables** : améliorent les performances d'écriture et de lecture tant qu'elles sont en mémoire (vidée à 32Mo)
+- **SSTables** : servent de stockage permanent et sont optimisées pour des lectures rapides
+
+</div> <div>
+
+<br>
+
+<br>
+
+
+![](./assets/commitlog.png)
+
+</div> </div>
+
+
+---
+
+
+## Cohérence éventuelle
+
+<div class="columns"> <div>
+
+
+- **Réplication asynchrone** mais configurable (ONE, QUORUM, ALL)
+
+- **Gestion des incohérence** :
+  - *hints* : actions que les noeuds en pannes doivent effectuer
+  - *Read Repair* pour synchroniser les données incohérentes aux noeuds
+
+</div> <div>
+
+
+
+<br>
+
+<br>
+
+
+![center](./assets/coherence-casandra.jpg)
+
+</div> </div>
+
+
+---
+
+## Tombstone et compactage
+
+<div class="columns"> <div>
+
+- **Compactage** : Fusionne les SSTables pour optimiser l'espace et la lecture :
+  - Size : taille similaire
+  - Leveled : taille fixe (160 Mo défaut)
+  - Time Windowed : basé sur les date de création
+- **Tombstone** : marqueur de suppression qui informe que les noeuds doivent supprimer les données
+
+</div> <div>
+
+<br>
+
+![center](./assets/tombstone.jpg)
+
+
+</div> </div>
+
+---
+
+## Modèle de données
+
+<div class="columns"> <div>
+
+
+- **Keyspace** : équivalent d'une base de données
+- **Table** : contient des colonnes et des lignes (rows)
+- **Partition** : clé primaire qui détermine l'emplacement de stockage des données
+- **Type de données** : supporte des types simples (texte, int, blob, date, ui), collections (list, map) et types complexes (user-defined-type)
+
+</div> <div>
+
+![center h:500](./assets/keyspace.png)
+
+</div> </div>
+
+---
+
+## Insérer des données et créer des tables
+
+<div class="columns"> <div>
+
+
+**Insérer une donnée**
+
+```sql
+INSERT INTO my_keyspace.users 
+(user_id, name, age, city)
+VALUES (uuid(), 'Alice', 30, 'Paris');
+```
+
+**Modifier une donnée**
+
+```sql
+UPDATE my_keyspace.users 
+SET city = 'Lyon' 
+WHERE user_id = [uuid];
+```
+
+**Supprimer une donnée**
+
+```sql
+DELETE FROM my_keyspace.users 
+WHERE user_id = [uuid];
+```
+
+</div> <div>
+
+<br>
+
+**Créer un keyspace**
+
+```sql
+CREATE KEYSPACE my_keyspace
+WITH replication = {'class': 
+'SimpleStrategy', 
+'replication_factor': 3};
+```
+
+**Créer une table**
+
+```sql
+CREATE TABLE my_keyspace.users (
+  user_id UUID PRIMARY KEY,
+  name text,
+  age int,
+  city text
+);
+```
+
+</div> </div>
+
+
+
+---
+
+
+## Distributions de Cassandra
+
+- **DataStax Enterprise** : version commerciale de Cassandra avec fonctionnalités avancées
+- **Apache Cassandra** : version communautaire gratuite
+- **Astra DB** : Cassandra managé dans le cloud par DataStax
+- **ScyllaDB** : réécriture de cassandra en un langage plus optimisé dans une version commerciale
+
+---
+
+
 # Amazon S3 et les formats de données
 
 ---
@@ -1609,7 +1829,7 @@ Une lifecycle configuration est composé d’un ensemble de règle (format JSON 
 
 <br>
 
-![center](./assets/acl-s3.png)
+![center h:450](./assets/acl-s3.png)
 
 </div>
 </div>
@@ -1743,3 +1963,6 @@ Limités pour le traitement de données volumineuses
 
 </div>
 </div>
+
+
+
