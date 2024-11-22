@@ -1,5 +1,5 @@
 ---
-marp: true
+marp: false
 footer: 'Master 2 IMSD - 2024'
 theme: default
 style: |
@@ -499,6 +499,273 @@ Apache Hive est un data warehouse pour Hadoop
 </div> </div>
 
 
+---
+
+# Apache Kafka
+
+---
+
+<div class="columns"> <div>
+
+![center h:100](./assets/Apache_kafka.svg)
+
+Kafka est un système de message :
+- Permet de gérer des flux de données en temps réel
+- Stocke les messages de manière persistante
+- Distribué et résilient à la panne
+- S'intègre à de nombreuses sources de données
+
+**Quand ?** : évènements, log, metrics, etc.
+
+</div> <div>
+
+![center](./assets/producer.png)
+
+- **Producer** : service qui envoit les messages
+- **Consumer** : service qui lit les messages
+- **Topic** : file de messages
+- **Broker** : serveur Kafka
+- **Cluster** : ensemble de brokers
+
+
+
+
+</div> </div>
+
+
+
+---
+
+## Système de topics et offset
+
+
+<div class="columns"> <div>
+
+- **Topic** : conteneur de messages pour une catégorie
+  - Stockage des messages
+  - Plusieurs consumer peuvent lire un même topic
+
+- **Offset** : position d’un message dans un topic
+  - Permet aux consommateurs de suivre la progression de lecture
+  - Indice stocké dans Kafka
+  - Reprise possible par le consumer (commit, *latest* ou *earlier*)
+
+</div> <div>
+
+<br>
+
+<br>
+
+
+<br>
+
+<br>
+
+![](./assets/topic.png)
+
+
+</div> </div>
+
+
+---
+
+## Création de topics
+
+
+![](./assets/kafka-ui.png)
+
+Ou via la CLI
+```bash
+bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+```
+
+
+---
+
+## Envoyer et recevoir des messages
+
+
+<div class="columns"> <div>
+
+
+**Producer**
+
+```python
+from kafka import KafkaProducer
+import json
+
+
+producer = KafkaProducer(
+    bootstrap_servers=['kafka:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+producer.send('test_topic', value={'a': 1})
+
+```
+
+Ou via la CLI :
+
+```bash
+$ bin/kafka-console-producer.sh
+--topic quickstart-events
+--bootstrap-server kafka:9092
+>This is my first event
+>This is my second event
+```
+
+
+</div> <div>
+
+
+
+**Consumer**
+
+```python
+from kafka import KafkaConsumer
+import json
+
+consumer = KafkaConsumer(
+    'test_topic',
+    bootstrap_servers=['kafka:9092'],
+    auto_offset_reset='latest',
+    enable_auto_commit=True,
+    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+)
+
+for message in consumer:
+    print(f"Message reçu : {message.value}")
+```
+
+Ou via la CLI :
+
+
+```bash
+$ bin/kafka-console-consumer.sh 
+--topic quickstart-events 
+--from-beginning 
+--bootstrap-server kafka:9092
+This is my first event
+This is my second event
+```
+
+
+</div> </div>
+
+
+---
+
+## Partionnement et réplication
+
+<div class="columns"> <div>
+
+- **Partitionnement** :
+  - Divise les topics pour distribuer la charge
+  - Fonction de hashage pour le partionnement
+
+- **Réplication** :
+  - Chaque partition est répliquée (HA)
+  - Un des réplicas est élu comme *Leader* (écriture)
+
+</div> <div>
+
+
+<br>
+
+
+
+![center](./assets/partition-kafka.png)
+
+</div> </div>
+
+---
+
+## Consumer Group
+
+<div class="columns"> <div>
+
+Ensemble de consommateurs de la même entité pour lire un topic
+
+  - Partage de la charge (*1 partition = 1 consumer*)
+  - Nécessite de faire attention au surdimensionnement de consumer
+
+</div> <div>
+
+
+![](./assets/consumer-group.png)
+
+</div> </div>
+
+
+---
+
+## Kafka Connect
+
+<div class="columns"> <div>
+
+  - Simplifie la connexion de Kafka avec des systèmes externes (bases de données, systèmes de fichiers, etc.)
+  - Prend en charge des [**Connectors**](https://docs.confluent.io/platform/current/connect/kafka_connectors.html) pour les sources et les destinations (*sink*)
+  - Gère la scalabilité et la tolérance aux pannes
+
+
+</div> <div>
+
+![](./assets/Kafka-Connect.png)
+
+</div> </div>
+
+---
+
+## Kafka Streams
+
+<div class="columns"> <div>
+
+- Bibliothèque de traitement de flux (Java)
+- Permet le traitement de données en continu (transformations, agrégations et jointures)
+- Intégré avec Kafka pour une faible latence et une tolérance aux pannes élevée
+
+</div> <div>
+
+
+![](./assets/streams.png)
+
+</div> </div>
+
+
+---
+
+## Kafka Bridge
+
+<div class="columns"> <div>
+
+
+- API qui permet l’accès en tant que producer et consumer à Kafka via le protocole HTTP
+- Simplifie l’accès pour des applications ou microservices
+
+*Exemple*
+
+```bash
+curl http://kafka:8080/topics
+#
+[
+  {
+    "topic":"bridge-quickstart-topic",
+    "key":"my-key",
+    "value":"sales-lead-0001",
+    "partition":0,
+    "offset":0
+  },
+#...
+```
+
+
+</div> <div>
+
+
+![center h:500](./assets/kafka-bridge.png)
+
+</div> </div>
+
 
 ---
 
@@ -814,270 +1081,3 @@ data = spark.readStream \
 
 </div> </div>
 
-
----
-
-# Apache Kafka
-
----
-
-<div class="columns"> <div>
-
-![center h:100](./assets/Apache_kafka.svg)
-
-Kafka est un système de message :
-- Permet de gérer des flux de données en temps réel
-- Stocke les messages de manière persistante
-- Distribué et résilient à la panne
-- S'intègre à de nombreuses sources de données
-
-**Quand ?** : évènements, log, metrics, etc.
-
-</div> <div>
-
-![center](./assets/producer.png)
-
-- **Producer** : service qui envoit les messages
-- **Consumer** : service qui lit les messages
-- **Topic** : file de messages
-- **Broker** : serveur Kafka
-- **Cluster** : ensemble de brokers
-
-
-
-
-</div> </div>
-
-
-
----
-
-## Système de topics et offset
-
-
-<div class="columns"> <div>
-
-- **Topic** : conteneur de messages pour une catégorie
-  - Stockage des messages
-  - Plusieurs consumer peuvent lire un même topic
-
-- **Offset** : position d’un message dans un topic
-  - Permet aux consommateurs de suivre la progression de lecture
-  - Indice stocké dans Kafka
-  - Reprise possible par le consumer (commit, *latest* ou *earlier*)
-
-</div> <div>
-
-<br>
-
-<br>
-
-
-<br>
-
-<br>
-
-![](./assets/topic.png)
-
-
-</div> </div>
-
-
----
-
-## Création de topics
-
-
-![](./assets/kafka-ui.png)
-
-Ou via la CLI
-```bash
-bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
-```
-
-
----
-
-## Envoyer et recevoir des messages
-
-
-<div class="columns"> <div>
-
-
-**Producer**
-
-```python
-from kafka import KafkaProducer
-import json
-
-
-producer = KafkaProducer(
-    bootstrap_servers=['kafka:9092'],
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-)
-
-producer.send('test_topic', value={'a': 1})
-
-```
-
-Ou via la CLI :
-
-```bash
-$ bin/kafka-console-producer.sh
---topic quickstart-events
---bootstrap-server kafka:9092
->This is my first event
->This is my second event
-```
-
-
-</div> <div>
-
-
-
-**Consumer**
-
-```python
-from kafka import KafkaConsumer
-import json
-
-consumer = KafkaConsumer(
-    'test_topic',
-    bootstrap_servers=['kafka:9092'],
-    auto_offset_reset='latest',
-    enable_auto_commit=True,
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
-)
-
-for message in consumer:
-    print(f"Message reçu : {message.value}")
-```
-
-Ou via la CLI :
-
-
-```bash
-$ bin/kafka-console-consumer.sh 
---topic quickstart-events 
---from-beginning 
---bootstrap-server kafka:9092
-This is my first event
-This is my second event
-```
-
-
-</div> </div>
-
-
----
-
-## Partionnement et réplication
-
-<div class="columns"> <div>
-
-- **Partitionnement** :
-  - Divise les topics pour distribuer la charge
-  - Fonction de hashage pour le partionnement
-
-- **Réplication** :
-  - Chaque partition est répliquée (HA)
-  - Un des réplicas est élu comme *Leader* (écriture)
-
-</div> <div>
-
-
-<br>
-
-
-
-![center](./assets/partition-kafka.png)
-
-</div> </div>
-
----
-
-## Consumer Group
-
-<div class="columns"> <div>
-
-Ensemble de consommateurs de la même entité pour lire un topic
-
-  - Partage de la charge (*1 partition = 1 consumer*)
-  - Nécessite de faire attention au surdimensionnement de consumer
-
-</div> <div>
-
-
-![](./assets/consumer-group.png)
-
-</div> </div>
-
-
----
-
-## Kafka Connect
-
-<div class="columns"> <div>
-
-  - Simplifie la connexion de Kafka avec des systèmes externes (bases de données, systèmes de fichiers, etc.)
-  - Prend en charge des [**Connectors**](https://docs.confluent.io/platform/current/connect/kafka_connectors.html) pour les sources et les destinations (*sink*)
-  - Gère la scalabilité et la tolérance aux pannes
-
-
-</div> <div>
-
-![](./assets/Kafka-Connect.png)
-
-</div> </div>
-
----
-
-## Kafka Streams
-
-<div class="columns"> <div>
-
-- Bibliothèque de traitement de flux (Java)
-- Permet le traitement de données en continu (transformations, agrégations et jointures)
-- Intégré avec Kafka pour une faible latence et une tolérance aux pannes élevée
-
-</div> <div>
-
-
-![](./assets/streams.png)
-
-</div> </div>
-
-
----
-
-## Kafka Bridge
-
-<div class="columns"> <div>
-
-
-- API qui permet l’accès en tant que producer et consumer à Kafka via le protocole HTTP
-- Simplifie l’accès pour des applications ou microservices
-
-*Exemple*
-
-```bash
-curl http://kafka:8080/topics
-#
-[
-  {
-    "topic":"bridge-quickstart-topic",
-    "key":"my-key",
-    "value":"sales-lead-0001",
-    "partition":0,
-    "offset":0
-  },
-#...
-```
-
-
-</div> <div>
-
-
-![center h:500](./assets/kafka-bridge.png)
-
-</div> </div>
