@@ -952,6 +952,60 @@ docker system prune
 
 ---
 
+## Utiliser la CLI
+
+
+<div class="columns">
+<div>
+
+Créer un Pod nginx avec le port 80 exposé
+
+```
+kubectl run nginx --image nginx --port 80
+```
+
+
+Créer un service à partir du pod `nginx`
+
+```
+kubetctl expose pod/nginx
+```
+
+Créer un ingress nommé web pour exposer l'application
+
+```
+kubectl create ingress
+--class onyxia
+--rule test.example.fr/*=nginx:80 web
+```
+
+</div>
+<div>
+
+
+Afficher la liste des pods
+
+```
+kubectl get pods
+```
+
+Afficher la configuration de la ressource web de type ingress
+
+```
+kubectl get ingress web -o yaml
+```
+
+Supprimer une ressource
+
+```
+kubectl delete pod nginx
+```
+
+</div>
+</div>
+
+---
+
 ## Cas d'usage : Spark sous Kubernetes
 
 <div class="columns">
@@ -962,7 +1016,7 @@ Apache Spark peut-être utilisé dans un cluster Kubernetes afin d’exécuter d
 - Le driver crée ensuite un Pod workers (executors) qui sont chargés d’executer le code
 - Les Pods sont ensuite supprimés parle driver Pod
 
-*Note : le driver reste toujours present (dans un état completed) afin de conserver les logs du job*
+*Note : le driver reste toujours présent (dans un état Completed) afin de conserver les logs du job*
 
 
 </div>
